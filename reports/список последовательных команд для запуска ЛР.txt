@@ -1,0 +1,54 @@
+ЛР №1:
+docker-compose up --build
+localhost:5000
+docker-compose down -v
+docker swarm init
+docker build -t shop_frontend:latest ./frontend
+docker stack deploy -c docker-stack.yml shop
+docker stack ls
+docker stack services shop
+docker stack ps shop
+docker service ls
+docker service ps shop_frontend
+docker ps --filter "name=shop_frontend" --format "table {{.ID}\t{{.Names}\t{{.Status}}"
+docker kill <container_id>
+docker service ps shop_frontend
+docker service scale shop_frontend=5
+docker service ls
+docker stack services shop
+docker service ps shop_frontend
+localhost:5000
+docker stack rm shop
+docker swarm leave --force
+
+ЛР №2:
+minikube start (сделано)
+docker build -t shop_frontend:v1 ./frontend
+minikube image load shop_frontend:v1
+minikube image ls (надо ли?)
+kubectl apply -f k8s/redis-deployment.yaml
+kubectl apply -f k8s/redis-service.yaml
+kubectl apply -f k8s/frontend-deployment.yaml
+kubectl apply -f k8s/frontend-service.yaml
+kubectl get deployments
+kubectl get pods -o wide
+kubectl get services
+minikube service frontend --url
+(переход по указанной ссылке)
+docker build -t shop_frontend:v2 ./frontend
+minikube image load shop_frontend:v2
+kubectl apply -f k8s/frontend-deployment.yaml
+kubectl rollout status deployment/frontend
+kubectl get pods -o wide
+minikube service frontend --url
+(переход по новой указанной ссылке)
+kubectl delete -f k8s/redis-deployment.yaml
+kubectl delete -f k8s/redis-service.yaml
+kubectl delete -f k8s/frontend-deployment.yaml
+kubectl delete -f k8s/frontend-service.yaml
+minikube stop
+minikube delete
+
+ЛР №3:
+docker-compose up --build
+docker-compose down

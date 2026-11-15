@@ -1,0 +1,55 @@
+services:
+  mosquitto:
+    image: eclipse-mosquitto:2.0
+    ports:
+      - "1883:1883"
+    volumes:
+      - ./mosquitto/config:/mosquitto/config
+      - mosq_data:/mosquitto/data
+      - mosq_log:/mosquitto/log
+    networks:
+      - factory-net
+
+  node-red:
+    image: nodered/node-red:latest
+    ports:
+      - "1880:1880"
+    volumes:
+      - node_red_data:/data
+    depends_on:
+      - mosquitto
+    networks:
+      - factory-net
+    environment:
+      - TZ=UTC
+
+  sensor:
+    build: ./sensor
+    depends_on:
+      - mosquitto
+    networks:
+      - factory-net
+    environment:
+      - MQTT_BROKER=mosquitto
+      - SENSOR_TOPIC=factory/sensor/1
+    restart: unless-stopped
+
+  cloud:
+    build: ./cloud
+    depends_on:
+      - mosquitto
+    networks:
+      - factory-net
+    environment:
+      - MQTT_BROKER=mosquitto
+      - ALERT_TOPIC=factory/cloud/alerts
+    restart: unless-stopped
+
+volumes:
+  mosq_data:
+  mosq_log:
+  node_red_data:
+
+networks:
+  factory-net:
+    driver: bridge
